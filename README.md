@@ -6,7 +6,7 @@
 
 Node.js 22 이상. `npm ci`, `npm run build`, `npm start`.
 `npm test`는 문구, 장면 길이, 수동 가림 보간, 로그 허용 필드를 검사합니다.
-Render: Node web service, Singapore, build `npm ci && npm run build`, start `npm start`, health `/api/health`.
+Render: Node web service, Singapore, build `npm ci --include=dev && npm run build`, start `npm start`, health `/api/health`.
 
 ## 구현
 
@@ -35,3 +35,7 @@ Express에는 미디어 업로드 API가 없습니다. `/api/events`는 JSON 2KB
 
 얼굴 모델과 WASM은 빌드 때 공식 배포처/고정 버전 패키지에서 받아 같은 출처에서 제공합니다. 런타임에 미디어를 외부 AI로 전송하지 않습니다.
 폰트: Noto Sans KR, Noto Serif KR (SIL OFL); MediaPipe (Apache-2.0); Mediabunny (MPL-2.0); Lucide (ISC). 배경음악은 코드로 합성한 단순 멜로디입니다. Render 무료 플랜은 비활성 시 절전되어 첫 연결이 지연될 수 있습니다.
+
+## 검증 기록
+
+2026-09-23: 단위 검사 4개 통과. 브라우저 통합 검사 9개 통과: 공개 얼굴 사진 검출, 5초 이후 수동 가림 유지, 영상 시간별 분석, 움직이는 얼굴 검출, 얼굴 위치 추적, 9:16 MP4 해상도, 촬영 소리+배경음악 AAC, 영상·소리 길이 일치, 실제 파일 생성. 공개 배포에서 샘플 분석 및 모바일 수동 가림 동작 확인. 실제 아이폰/안드로이드 실기기와 네이버 앱 게시 검증은 별도 필요.

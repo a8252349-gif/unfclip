@@ -5,6 +5,6 @@ app.use((req,res,next)=>{res.set({'X-Content-Type-Options':'nosniff','Referrer-P
 app.get('/api/health',(_req,res)=>res.json({ok:true}));
 let windowStart=Date.now(),events=0;
 app.post('/api/events',express.json({limit:'2kb',strict:true}),(req,res)=>{if(req.headers['sec-fetch-site']==='cross-site')return res.sendStatus(403);if(Date.now()-windowStart>60000){windowStart=Date.now();events=0}if(++events>1000)return res.sendStatus(429);const event=sanitizeEvent(req.body);if(!event)return res.sendStatus(400);console.log(JSON.stringify({time:new Date().toISOString(),...event}));res.sendStatus(204)});
-app.use('/api',(_req,res)=>res.sendStatus(404));app.use(express.static('dist',{maxAge:'1h',index:'index.html'}));
+app.use('/api',(_req,res)=>res.sendStatus(404));app.use(express.static('dist',{maxAge:'1h',index:'index.html',setHeaders:(res,path)=>{if(path.endsWith('.html'))res.setHeader('Cache-Control','no-store')}}));
 app.use((err,req,res,next)=>res.sendStatus(err.status===413?413:400));
 app.listen(process.env.PORT||3000,'0.0.0.0');
