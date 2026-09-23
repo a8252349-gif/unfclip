@@ -14,3 +14,11 @@ export const CODES=new Set(['NONE','FILE_UNSUPPORTED','FILE_LIMIT','MODEL_FAILED
 export function sanitizeEvent(body){if(!body||!EVENTS.has(body.event))return null;const safe={event:body.event,version:VERSION};if(/^[a-f0-9-]{16,40}$/.test(body.job||''))safe.job=body.job;if(CODES.has(body.code))safe.code=body.code;for(const key of ['count','seconds','elapsed','width','height'])if(Number.isFinite(body[key])&&body[key]>=0&&body[key]<=1e7)safe[key]=Math.round(body[key]);for(const [k,values]of Object.entries({os:['ios','android','mac','windows','other'],browser:['safari','chrome','samsung','firefox','other'],source:['direct','kakao','website','shared'],size:['small','medium','large']}))if(values.includes(body[k]))safe[k]=body[k];return safe}
 
 export function formatPhone(value){const n=value.replace(/\D/g,'');if(n.length===8)return n.replace(/(\d{4})(\d{4})/,'$1-$2');if(n.startsWith('02')&&n.length===9)return n.replace(/(\d{2})(\d{3})(\d{4})/,'$1-$2-$3');if(n.startsWith('02')&&n.length===10)return n.replace(/(\d{2})(\d{4})(\d{4})/,'$1-$2-$3');if(n.length===10)return n.replace(/(\d{3})(\d{3})(\d{4})/,'$1-$2-$3');if(n.length===11)return n.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');return value}
+
+// Stable detection IDs allow corrections without altering the detector output.
+export function automaticBoxesAt(c,t){
+ if(c.autoHidden||!c.auto.length)return [];
+ let frames=[0];
+ if(c.kind!=='image'){let i=c.auto.findIndex(f=>f.t>=t);if(i<0)i=c.auto.length-1;frames=[...new Set([Math.max(0,i-1),i])];}
+ return frames.flatMap(i=>c.auto[i].boxes.map((b,j)=>({...b,id:`auto-${i}-${j}`}))).filter(b=>!(c.removedAuto||[]).includes(b.id));
+}
