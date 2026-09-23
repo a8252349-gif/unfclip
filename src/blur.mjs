@@ -12,7 +12,13 @@ export function gaussianRGBA(data,width,height,sigma){
  }return out;
 }
 let patch;
-export function blurRegion(canvas,x,y,w,h){
+export function faceCircle(x,y,w,h,width,height){
+ const cx=x+w/2,cy=y+h/2,radius=Math.hypot(w,h)*.6;
+ const left=Math.max(0,cx-radius),top=Math.max(0,cy-radius);
+ return {cx,cy,radius,x:left,y:top,w:Math.max(0,Math.min(width,cx+radius)-left),h:Math.max(0,Math.min(height,cy+radius)-top)};
+}
+export function circleAlpha(x,y,circle){const d=Math.hypot(x-circle.cx,y-circle.cy)/circle.radius;const a=Math.max(0,Math.min(1,(1-d)/.12));return Math.round(255*a*a*(3-2*a))}
+export function blurRegion(canvas,x,y,w,h,circle=null){
  patch??=document.createElement('canvas');const ratio=Math.min(1,96/Math.max(w,h));
  patch.width=Math.max(2,Math.ceil(w*ratio));patch.height=Math.max(2,Math.ceil(h*ratio));
  const c=patch.getContext('2d',{willReadFrequently:true});c.drawImage(canvas,x,y,w,h,0,0,patch.width,patch.height);
@@ -20,7 +26,7 @@ export function blurRegion(canvas,x,y,w,h){
  // Feather only the outer padding; the central face area stays fully blurred.
  for(let py=0;py<patch.height;py++)for(let px=0;px<patch.width;px++){
   const edge=Math.min((px+.5)/patch.width,(patch.width-px-.5)/patch.width,(py+.5)/patch.height,(patch.height-py-.5)/patch.height);
-  const a=Math.min(1,edge/.055);pixels.data[(py*patch.width+px)*4+3]=Math.round(255*a*a*(3-2*a));
+  const a=Math.min(1,edge/.055);pixels.data[(py*patch.width+px)*4+3]=circle?circleAlpha(x+(px+.5)*w/patch.width,y+(py+.5)*h/patch.height,circle):Math.round(255*a*a*(3-2*a));
  }
  c.putImageData(pixels,0,0);const ctx=canvas.getContext('2d');ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(patch,x,y,w,h);ctx.restore();
 }
