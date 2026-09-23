@@ -1,10 +1,12 @@
 import express from 'express';
+import {getColumns} from './columns.mjs';
 import {sanitizeEvent} from './src/core.mjs';
 const app=express();app.disable('x-powered-by');
-app.use((req,res,next)=>{res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Permissions-Policy':'camera=(), microphone=(), geolocation=()','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"});next()});
+app.use((req,res,next)=>{res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Permissions-Policy':'camera=(), microphone=(), geolocation=()','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://unfmarketing.com; media-src 'self' blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"});next()});
 app.get('/api/health',(_req,res)=>res.json({ok:true}));
 let windowStart=Date.now(),events=0;
 app.post('/api/events',express.json({limit:'2kb',strict:true}),(req,res)=>{if(req.headers['sec-fetch-site']==='cross-site')return res.sendStatus(403);if(Date.now()-windowStart>60000){windowStart=Date.now();events=0}if(++events>1000)return res.sendStatus(429);const event=sanitizeEvent(req.body);if(!event)return res.sendStatus(400);console.log(JSON.stringify({time:new Date().toISOString(),...event}));res.sendStatus(204)});
+app.get('/api/columns',async(_req,res)=>{try{res.set('Cache-Control','public, max-age=60');res.json(await getColumns())}catch{res.status(503).json({posts:[],unavailable:true})}});
 app.use('/api',(_req,res)=>res.sendStatus(404));app.use(express.static('dist',{maxAge:'1h',index:'index.html',setHeaders:(res,path)=>{if(path.endsWith('.html'))res.setHeader('Cache-Control','no-store')}}));
 app.use((err,req,res,next)=>res.sendStatus(err.status===413?413:400));
 app.listen(process.env.PORT||3000,'0.0.0.0');
