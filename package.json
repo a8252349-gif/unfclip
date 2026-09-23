@@ -10,6 +10,9 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
+    "@fontsource/gowun-batang": "^5.3.0",
+    "@fontsource/gowun-dodum": "^5.3.0",
+    "@fontsource/nanum-gothic": "^5.3.0",
     "@fontsource/noto-sans-kr": "^5.3.0",
     "@fontsource/noto-serif-kr": "^5.3.0",
     "@mediapipe/tasks-vision": "0.10.32",

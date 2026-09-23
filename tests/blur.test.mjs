@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {gaussianRGBA} from '../src/blur.mjs';
+test('Gaussian preserves constant colour including cropped edges',()=>{const a=new Uint8ClampedArray(13*9*4);for(let i=0;i<a.length;i+=4)a.set([80,120,160,255],i);assert.deepEqual(gaussianRGBA(a,13,9,2),a)});
+test('Gaussian spreads detail smoothly and symmetrically rather than pixelating',()=>{const w=21,a=new Uint8ClampedArray(w*w*4);for(let i=3;i<a.length;i+=4)a[i]=255;a.set([255,255,255,255],(10*w+10)*4);const b=gaussianRGBA(a,w,w,2),v=(x,y)=>b[(y*w+x)*4];assert(v(10,10)>v(12,10));assert(v(12,10)>v(15,10));assert.equal(v(8,10),v(12,10));assert.equal(v(10,8),v(10,12));assert(v(10,10)<255)});
