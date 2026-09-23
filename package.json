@@ -10,11 +10,14 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
+    "@fontsource/do-hyeon": "^5.3.0",
     "@fontsource/gowun-batang": "^5.3.0",
     "@fontsource/gowun-dodum": "^5.3.0",
+    "@fontsource/jua": "^5.3.0",
     "@fontsource/nanum-gothic": "^5.3.0",
     "@fontsource/noto-sans-kr": "^5.3.0",
     "@fontsource/noto-serif-kr": "^5.3.0",
+    "@fontsource/yeon-sung": "^5.3.0",
     "@mediapipe/tasks-vision": "0.10.32",
     "express": "5.2.1",
     "lucide-react": "0.577.0",
